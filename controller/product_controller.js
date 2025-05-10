@@ -75,3 +75,16 @@ exports.countProducts = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.searchProducts = async (req,res)=>{
+  const query = req.query.q || "";
+  try{
+    const products = await Product.find({
+      name:{$regex:query , $options:"i"},
+    })
+    res.status(200).json(products);
+  }catch(err){
+    console.error(err);
+    res.status(400).json({error:"Search Bar Failed"})
+  }
+}
