@@ -23,7 +23,7 @@ exports.createOrder = async (req, res) => {
 
     await order.save();
 
-    await Cart.findOneAndDelete({ userId }); // Delete the cart
+    await Cart.findOneAndDelete({ userId });
 
     res.status(201).json({ message: 'Order placed successfully', order });
 
@@ -31,6 +31,7 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 }
+
 
 exports.updateOrder = async(req,res)=>{
 

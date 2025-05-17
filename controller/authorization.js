@@ -45,7 +45,7 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_PRIVATE_KEY, {
-      expiresIn: "2h", // Token expires in 1 hour
+      expiresIn: "2h",
     });
     console.log("Generated Token:", token);
 
@@ -69,7 +69,7 @@ exports.validateUser = async (req, res) => {
     if (!decoded.userId||!decoded) {
       return res.status(401).json({ message: "Invalid Token" });
     }
-    const currentTime = Math.floor(Date.now() / 1000); // Convert to seconds
+    const currentTime = Math.floor(Date.now() / 1000); 
     if (decoded.exp && decoded.exp < currentTime) {
       return res.status(401).json({ message: "Token has expired, please log in again" });
     }

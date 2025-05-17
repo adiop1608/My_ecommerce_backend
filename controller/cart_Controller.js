@@ -1,5 +1,3 @@
-// Assuming productId is sent from frontend
-
 const Product = require('../models/product.model');
 const Cart = require('../models/cart.model');
 
@@ -21,7 +19,7 @@ exports.getCart = async (req, res) => {
 }
 
 exports.addToCart = async (req, res) => {
-  const { productId, name, price, discount,cardImage } = req.body
+  const { productId, name, description, price, discount,cardImage } = req.body
   const userId = req.user.userId;
   if (!userId) {
     return res.status(400).json({ error: "User ID is missing from token" });
@@ -37,7 +35,7 @@ exports.addToCart = async (req, res) => {
   if (existingProduct) {
     existingProduct.quantity += 1
   } else {
-    cart.products.push({ productId, name, price, cardImage, discount, quantity: 1 })
+    cart.products.push({ productId, name,description, price, cardImage, discount, quantity: 1 })
   }
 
   cart.subtotal = calculateSubtotal(cart.products)
