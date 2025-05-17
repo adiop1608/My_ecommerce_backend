@@ -5,6 +5,8 @@ const router = express.Router();
 router
     .post("/",productController.createproduct)
     .get("/", productController.getAllProducts)
+    .get("/paginated", productController.pageProducts)
+    .get("/filter", productController.filterProducts)
     .put("/update/:id", productController.updateProduct)
     .delete("/delete/:id", productController.deleteProduct)
     .get("/count", productController.countProducts)

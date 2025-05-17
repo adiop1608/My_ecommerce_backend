@@ -3,7 +3,7 @@ const {User} = require('./user.model')
 const CartProductSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', // optional, in case you want to use populate
+    ref: 'Product', 
     required: true,
   },
   name: String,
@@ -20,7 +20,7 @@ const CartProductSchema = new mongoose.Schema({
 
 const CartSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Types.ObjectId,  // 🔥 changed from String to ObjectId
+    type: mongoose.Types.ObjectId, 
     ref: 'User',
     required: true,
     unique: true,

@@ -17,6 +17,40 @@ exports.getAllProducts = async (req, res) => {
     const products =  await Product.find({});
      res.json(products);
 }
+exports.filterProducts = async (req, res) => {
+    try {
+    const { category, brand } = req.query;
+    let filter = {};
+
+    if (category) filter.category = category;
+    if (brand) filter.brand = brand;
+
+    const products = await Product.find(filter);
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch products" });
+  }
+}
+exports.pageProducts = async (req, res) => {
+      try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find().skip(skip).limit(limit);
+    const total = await Product.countDocuments();
+
+    res.status(200).json({
+      products,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error fetching paginated products:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 
 
 exports.getProduct = async (req, res) => {
