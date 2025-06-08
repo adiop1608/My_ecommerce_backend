@@ -19,7 +19,7 @@ router
     .patch("/address/:id",auth,updateAddress)
     .delete("/address/:id",auth,deleteAddress)
     .get("/address",auth,getAllAddresses)
-    .put('/role/:userId',updateRole)
+    .put('/role/:userId',auth,updateRole)
     .get("/:id",auth,getUser)
 
 

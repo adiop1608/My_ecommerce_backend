@@ -1,44 +1,60 @@
-const Cart = require('../models/cart.model');
-const Order = require('../models/order.model');
-
+const Cart = require("../models/cart.model");
+const Order = require("../models/order.model");
 
 exports.createOrder = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { selectedAddress, paymentMethod } = req.body; // get from frontend
+    const {
+      selectedAddress,
+      paymentMethod,
+      products,
+      subtotal,
+      totalDiscount,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+      paymentStatus,
+      isFromCart,
+    } = req.body;
 
-    const cart = await Cart.findOne({ userId });
-    if (!cart || cart.products.length === 0) {
-      return res.status(400).json({ error: "Cart is empty" });
+    let orderProducts = products;
+    if (!orderProducts || orderProducts.length === 0) {
+      const cart = await Cart.findOne({ userId });
+      if (!cart || cart.products.length === 0) {
+        return res.status(400).json({ error: "Cart is empty" });
+      }
+      orderProducts = cart.products;
     }
 
     const order = new Order({
       userId,
-      products: cart.products,
+      products: orderProducts,
       address: selectedAddress,
       paymentMethod,
-      subtotal: cart.subtotal,
-      totalDiscount: cart.totalDiscount,
+      subtotal,
+      totalDiscount,
+      razorpayPaymentId: razorpayPaymentId || null,
+      razorpayOrderId: razorpayOrderId || null,
+      paymentStatus: paymentStatus||(paymentMethod === "cash" ? "Pending" : "Paid"),
     });
 
     await order.save();
-
-    await Cart.findOneAndDelete({ userId });
-
-    res.status(201).json({ message: 'Order placed successfully', order });
-
+    if (isFromCart) {
+      await Cart.findOneAndDelete({ userId }); // Empty cart only if using cart flow
+    }
+    res.status(201).json({ message: "Order placed successfully", order });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}
+};
 
-
-exports.updateOrder = async(req,res)=>{
-
-try {
+exports.updateOrder = async (req, res) => {
+  try {
     const { id } = req.params;
-    const updateData = req.body; 
-    const updatedOrder = await Order.findByIdAndUpdate(id, updateData, { new: true });
+    const updateData = req.body;
+    const updatedOrder = await Order.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -47,31 +63,32 @@ try {
     console.error("Error updating order:", err);
     res.status(500).json({ message: "Failed to update" });
   }
-}
+};
 
-exports.getAllUserorder = async(req,res)=>{
-  try{
+exports.getAllUserorder = async (req, res) => {
+  try {
     const userId = req.user.userId;
     const order = await Order.find({ userId: userId });
     res.status(200).json(order);
-  }catch(error){
+  } catch (error) {
     console.error(error);
-    res.status(500).json({message:"Failed to fetch orders"});
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
-}
-exports.getAllOrder = async(req,res)=>{
-  try{
-    const orders = await Order.find()
-      .populate({ path: 'userId', select: 'email' });
+};
+exports.getAllOrder = async (req, res) => {
+  try {
+    const orders = await Order.find().populate({
+      path: "userId",
+      select: "email",
+    });
     res.status(200).json(orders);
-  }catch(error){
+  } catch (error) {
     console.error(error);
-    res.status(500).json({message:"Failed to fetch orders"});
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
-}
+};
 exports.getSalesData = async (req, res) => {
   try {
-
     const salesData = await Order.aggregate([
       {
         $group: {
@@ -100,7 +117,7 @@ exports.getTopSellingProducts = async (req, res) => {
         },
       },
       {
-        $sort: { totalSold: -1 }
+        $sort: { totalSold: -1 },
       },
       { $limit: 5 }, // Top 5 selling products
       {
@@ -108,11 +125,11 @@ exports.getTopSellingProducts = async (req, res) => {
           from: "products",
           localField: "_id",
           foreignField: "_id",
-          as: "productInfo"
-        }
+          as: "productInfo",
+        },
       },
       {
-        $unwind: "$productInfo"
+        $unwind: "$productInfo",
       },
       {
         $project: {
@@ -121,9 +138,9 @@ exports.getTopSellingProducts = async (req, res) => {
           name: "$productInfo.name",
           totalSold: 1,
           cardImage: "$productInfo.cardImage",
-          price: "$productInfo.price"
-        }
-      }
+          price: "$productInfo.price",
+        },
+      },
     ]);
 
     res.status(200).json(topProducts);
@@ -133,13 +150,12 @@ exports.getTopSellingProducts = async (req, res) => {
   }
 };
 
-exports.countOrder = async(req,res)=>{
-  try{
+exports.countOrder = async (req, res) => {
+  try {
     const count = await Order.countDocuments({});
-    res.status(201).json({totalOrders:count});
-  }catch(error){
+    res.status(201).json({ totalOrders: count });
+  } catch (error) {
     console.error("Error counting Orders:", error);
     res.status(500).json("Server Error");
-
   }
-}
+};
