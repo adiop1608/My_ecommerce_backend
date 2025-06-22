@@ -10,6 +10,7 @@ const AuthRouter = require('./routes/user.route');
 const CartRouter = require('./routes/cart.route');
 const OrderRouter = require('./routes/order.route');
 const PaymentRouter = require('./routes/payment.route');
+const PORT = process.env.PORT;
 const { auth, adminAuth } = require('./middleware/auth');
 
 
@@ -27,6 +28,6 @@ server.use('/api/cart',auth,CartRouter);
 server.use('/api/order',auth,OrderRouter);
 server.use('/api/payment',auth,PaymentRouter);
 
-server.listen(8080,()=>{
-  console.log('Server Started at Port 8080');
+server.listen(PORT||3000,()=>{
+  console.log(`Server Started at Port ${PORT}`);
 });
