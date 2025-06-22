@@ -1,7 +1,12 @@
 const express = require('express');
 const server = express();
 const cors = require('cors')
-server.use(cors({ origin: "https://shopsphere-livid.vercel.app/", credentials: true }));
+server.use(cors({
+  origin: "https://shopsphere-livid.vercel.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 require('dotenv').config()
 server.use(express.json());
 const { default: mongoose } = require("mongoose");
