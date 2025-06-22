@@ -5,7 +5,7 @@ const calculateSubtotal = (products) =>
   products.reduce((total, item) => total + item.price * item.quantity, 0)
 
 const calculateTotalDiscount = (products)=>
-  products.reduce((total,item) => total + (item.price * item.discount/100),0)
+  products.reduce((total,item) => total + item.quantity*(item.price * item.discount/100),0)
 
 exports.getCart = async (req, res) => {
   try {

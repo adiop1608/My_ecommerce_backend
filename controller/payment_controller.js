@@ -15,10 +15,8 @@ exports.makePayment = async (req, res) => {
     amount: Math.round(amount * 100),
     currency: "INR",
   };
-  console.log(options)
   try {
     const order = await razorpay.orders.create(options);
-    console.log(options);
     res.json({
       orderId: order.id,
       currency: order.currency,
