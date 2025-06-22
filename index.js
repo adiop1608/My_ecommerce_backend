@@ -2,7 +2,7 @@ const express = require('express');
 const server = express();
 const cors = require('cors')
 server.use(cors({
-  origin: "https://shopsphere-dc9vbf0tj-aadityas-projects-3e0afe5a.vercel.app/",
+  origin: 'https://shopsphere-dc9vbf0tj-aadityas-projects-3e0afe5a.vercel.app',
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
